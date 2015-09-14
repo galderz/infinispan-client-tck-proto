@@ -1,0 +1,258 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.infinispan</groupId>
+   <artifactId>infinispan-client-hotrod-tck</artifactId>
+   <version>1.0-SNAPSHOT</version>
+   <name>${project.artifactId}</name>
+   <description>My wonderfull scala app</description>
+   <inceptionYear>2010</inceptionYear>
+   <licenses>
+      <license>
+         <name>My License</name>
+         <url>http://....</url>
+         <distribution>repo</distribution>
+      </license>
+   </licenses>
+
+   <properties>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      <maven.compiler.target>1.8</maven.compiler.target>
+      <encoding>UTF-8</encoding>
+
+      <scala.major>2.11</scala.major>
+      <scala.version>${scala.major}.7</scala.version>
+
+      <version.org.infinispan>8.0.0.Final</version.org.infinispan>
+      <version.org.infinispan.arquillian.container>1.2.0.Alpha3</version.org.infinispan.arquillian.container>
+      <version.org.wildfly.arquillian>1.0.0.Final</version.org.wildfly.arquillian>
+      <version.wildfly>10.0.0.Beta1</version.wildfly>
+      <version.maven.surefire>2.18.1</version.maven.surefire>
+
+      <server0.dist>${basedir}/target/server0/infinispan-server-${version.org.infinispan}</server0.dist>
+
+      <url.infinispan.server>http://downloads.jboss.org/infinispan/${version.org.infinispan}/infinispan-server-${version.org.infinispan}-bin.zip</url.infinispan.server>
+   </properties>
+
+   <dependencyManagement>
+      <dependencies>
+         <dependency>
+            <groupId>org.jboss.arquillian</groupId>
+            <artifactId>arquillian-bom</artifactId>
+            <version>1.1.5.Final</version>
+            <type>pom</type>
+            <scope>import</scope>
+         </dependency>
+      </dependencies>
+   </dependencyManagement>
+
+   <!--
+     <repositories>
+       <repository>
+         <id>scala-tools.org</id>
+         <name>Scala-Tools Maven2 Repository</name>
+         <url>http://scala-tools.org/repo-releases</url>
+       </repository>
+     </repositories>
+
+     <pluginRepositories>
+       <pluginRepository>
+         <id>scala-tools.org</id>
+         <name>Scala-Tools Maven2 Repository</name>
+         <url>http://scala-tools.org/repo-releases</url>
+       </pluginRepository>
+     </pluginRepositories>
+   -->
+   <dependencies>
+      <dependency>
+         <groupId>org.scala-lang</groupId>
+         <artifactId>scala-library</artifactId>
+         <version>${scala.version}</version>
+      </dependency>
+
+      <!-- Test -->
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <version>4.12</version>
+         <scope>test</scope>
+      </dependency>
+      <!--<dependency>-->
+         <!--<groupId>org.scala-tools.testing</groupId>-->
+         <!--<artifactId>specs_${scala.version}</artifactId>-->
+         <!--<version>1.6.5</version>-->
+         <!--<scope>test</scope>-->
+      <!--</dependency>-->
+      <dependency>
+         <groupId>org.scalatest</groupId>
+         <artifactId>scalatest_${scala.major}</artifactId>
+         <version>2.2.4</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.scalacheck</groupId>
+         <artifactId>scalacheck_${scala.major}</artifactId>
+         <version>1.12.1</version>
+         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.infinispan</groupId>
+         <artifactId>infinispan-client-hotrod</artifactId>
+         <version>${version.org.infinispan}</version>
+         <scope>test</scope>
+      </dependency>
+
+      <!-- Arquillian dependencies -->
+      <dependency>
+         <groupId>org.jboss.arquillian.junit</groupId>
+         <artifactId>arquillian-junit-container</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.arquillian.core</groupId>
+         <artifactId>arquillian-core-api</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.wildfly.arquillian</groupId>
+         <artifactId>wildfly-arquillian-container-managed</artifactId>
+         <version>${version.org.wildfly.arquillian}</version>
+         <scope>test</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>org.jboss.logmanager</groupId>
+               <artifactId>jboss-logmanager</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.jboss.logmanager</groupId>
+               <artifactId>log4j-jboss-logmanager</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.infinispan.arquillian.container</groupId>
+         <artifactId>infinispan-arquillian-impl</artifactId>
+         <version>${version.org.infinispan.arquillian.container}</version>
+         <scope>test</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>org.jboss.logmanager</groupId>
+               <artifactId>jboss-logmanager</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+   </dependencies>
+
+   <build>
+      <sourceDirectory>src/main/scala</sourceDirectory>
+      <testSourceDirectory>src/test/scala</testSourceDirectory>
+      <plugins>
+         <plugin>
+            <groupId>org.scala-tools</groupId>
+            <artifactId>maven-scala-plugin</artifactId>
+            <version>2.15.0</version>
+            <executions>
+               <execution>
+                  <goals>
+                     <goal>compile</goal>
+                     <goal>testCompile</goal>
+                  </goals>
+                  <configuration>
+                     <args>
+                        <!--<arg>-make:transitive</arg>-->
+                        <arg>-dependencyfile</arg>
+                        <arg>${project.build.directory}/.scala_dependencies
+                        </arg>
+                     </args>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>2.17</version>
+            <configuration>
+               <forkCount>1</forkCount>
+               <failIfNoTests>false</failIfNoTests>
+               <systemPropertyVariables>
+                  <server0.dist>${server0.dist}</server0.dist>
+                  <server.jmx.domain>jboss.datagrid-infinispan</server.jmx.domain>
+               </systemPropertyVariables>
+            </configuration>
+            <executions>
+               <execution>
+                  <goals>
+                     <goal>integration-test</goal>
+                     <goal>verify</goal>
+                  </goals>
+                  <configuration>
+                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                  </configuration>
+               </execution>
+            </executions>
+            <!--<dependencies>-->
+               <!--<dependency>-->
+                  <!--<groupId>org.apache.maven.surefire</groupId>-->
+                  <!--<artifactId>surefire-junit4</artifactId>-->
+                  <!--<version>${version.maven.surefire}</version>-->
+               <!--</dependency>-->
+            <!--</dependencies>-->
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+               <execution>
+                  <id>prepare</id>
+                  <phase>validate</phase>
+                  <configuration>
+                     <target>
+                        <echo message="Prepare Infinispan Server" />
+                        <mkdir dir="zips"/>
+                        <get src="${url.infinispan.server}"
+                             dest="zips/infinispan-server-${version.org.infinispan}.zip"
+                             skipexisting="true"/>
+                        <unzip src="zips/infinispan-server-${version.org.infinispan}.zip" dest="target/server0" />
+                     </target>
+                  </configuration>
+                  <goals>
+                     <goal>run</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+
+         <!--<plugin>-->
+            <!--<artifactId>maven-dependency-plugin</artifactId>-->
+            <!--<executions>-->
+               <!--<execution>-->
+                  <!--<id>unpack</id>-->
+                  <!--<phase>pre-integration-test</phase>-->
+                  <!--<goals>-->
+                     <!--<goal>unpack</goal>-->
+                  <!--</goals>-->
+                  <!--<configuration>-->
+                     <!--<artifactItems>-->
+                        <!--<artifactItem>-->
+                           <!--<groupId>org.wildfly</groupId>-->
+                           <!--<artifactId>wildfly-dist</artifactId>-->
+                           <!--<version>${version.wildfly}</version>-->
+                           <!--<type>zip</type>-->
+                           <!--<overWrite>false</overWrite>-->
+                           <!--<outputDirectory>${project.build.directory}/server/node0</outputDirectory>-->
+                        <!--</artifactItem>-->
+                     <!--</artifactItems>-->
+                  <!--</configuration>-->
+               <!--</execution>-->
+            <!--</executions>-->
+         <!--</plugin>-->
+
+      </plugins>
+   </build>
+</project>
